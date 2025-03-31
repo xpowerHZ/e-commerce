@@ -6,24 +6,10 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
+  previewFeatures = ["driverAdapters", "prismaSchemaFolder"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-model Product {
-  id         String   @id @default(uuid())
-  name       String
-  category   String
-  price      Decimal
-  image      String
-  featured   Boolean
-  material   String
-  dimensions String
-  origin     String
-  care       String
-  createdAt  DateTime @default(now())
 }

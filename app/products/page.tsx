@@ -14,7 +14,6 @@ type ProductsPageProps = {
 export default async function ProductsPage({
   searchParams,
 }: ProductsPageProps) {
-  // Directly use searchParams instead of awaiting a Promise
   const filterQueries = await searchParams;
 
   // Ensure category is an array even if it's a single string
