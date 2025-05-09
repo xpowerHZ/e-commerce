@@ -89,3 +89,8 @@
    - `CreateOrderUseCase` が返した値を **OrderPresenter** でディスプレイフォーマットに変換して返す
 4. **createOrderHandler (Driver & Infrastructure層)**
    - Controller が返した値を返す
+
+
+DATABASE_URL="postgresql://neondb_owner:npg_L0DzM5gbmXPJ@ep-hidden-river-a19ld4i4-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
+# uncomment next line if you use Prisma <5.10
+# DATABASE_URL_UNPOOLED="postgresql://neondb_owner:npg_L0DzM5gbmXPJ@ep-hidden-river-a19ld4i4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
