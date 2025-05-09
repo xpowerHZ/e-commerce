@@ -3,14 +3,15 @@ import { QuantitySelector } from "./quantity-selector";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProductInfo } from "./product-info";
 import { ShippingInfo } from "./shipping-info";
-import { Product } from "@/types/Product";
+import { ProductDetailView } from "@/server/controller/product/presenter";
+import { CategoryMap } from "@/mapper/category-map";
 
-export const ProductDetail = (product: Product) => {
+export const ProductDetail = (product: ProductDetailView) => {
   return (
     <div className="flex flex-col gap-4">
       <div>
         <h1 className="text-3xl font-bold">{product.name}</h1>
-        <p className="text-muted-foreground">{product.category}</p>
+        <p className="text-muted-foreground">{CategoryMap[product.category as keyof typeof CategoryMap].display}</p>
       </div>
 
       <div className="text-2xl font-semibold">${product.price.toFixed(2)}</div>

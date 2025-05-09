@@ -1,7 +1,7 @@
 import { TabsContent } from "@/components/ui/tabs";
-import { Product } from "@/types/Product";
+import { ProductDetailView } from "@/server/controller/product/presenter";
 type props = {
-  product: Product;
+  product: ProductDetailView;
 };
 export const ProductInfo = ({ product }: props) => {
   return (

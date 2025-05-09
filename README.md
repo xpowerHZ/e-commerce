@@ -1,41 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# サーバ構築
 
-## Getting Started
+## Domain層(domains)
 
-First, run the development server:
+- **entities**
+- **errors**
+- **interface**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Application層(use case)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **use case**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Interface Adapter層(controller)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **controller**
+- **presenter**
 
-## Learn More
+## Infrastructure層(infrastructures)
 
-To learn more about Next.js, take a look at the following resources:
+- **repository**
+- **payment processor** (支払い処理)
+- **unit of work**　（データベースの一貫性のため）
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Driver層(handler)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **handler**
 
-## Deploy on Vercel
+# Control Flow
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. **外部で handler server action を呼び出す**
+2. **handler がリクエストオブジェクトにベーシックバリデーションを行う**
+   - 対応の **repository** オブジェクトを作成
+   - 対応の **infrastructure** を作成
+   - 対応の **use case** を作成し、repository や infrastructure を渡す
+   - 対応の **controller** を作成し、use case を渡す
+   - その **controller** を呼び出す
+3. **controller がリクエストオブジェクトをエンティティオブジェクトに変換し、対応する use case を呼び出す**
+4. **use case でビジネスロジックを実施し、対応の repository interface メソッドを呼び出す**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# 例: 注文作成リクエスト
 
+## 内向きフロー 
 
-DATABASE_URL="postgresql://neondb_owner:npg_L0DzM5gbmXPJ@ep-hidden-river-a19ld4i4-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
-# uncomment next line if you use Prisma <5.10
-# DATABASE_URL_UNPOOLED="postgresql://neondb_owner:npg_L0DzM5gbmXPJ@ep-hidden-river-a19ld4i4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
+1. **createOrderHandler (Driver & Infrastructure層)**
+
+   - **リクエストバリデーション**
+   - **Infrastructure instance 作成**
+     - `product repository`
+     - `order repository`
+     - `unit of work`
+     - `payment processor`
+   - **Use case instance 作成**
+     - `GetProductDetailUseCase`
+       - `product repository` を渡す
+     - `CreateOrderUseCase`
+       - `order repository` を渡す
+       - `unit of work` を渡す
+       - `payment processor` を渡す
+   - **CreateOrderController instance 作成**
+     - `GetProductUseCase` と `CreateOrderUseCase` を渡す
+   - **CreateOrderController を呼び出す**
+
+2. **CreateOrderController(Interface Adaptor層)**
+
+   - Request Order Object の各 product 毎に `GetProductDetailUseCase` を呼び出し
+     - **price の認証** を行う
+   - 認証済み Product をもって **Order Entity Object** を作成する
+   - **total price の認証** を行う
+   - `CreateOrderUseCase` を呼び出す
+     - 作成した Order Entity Object を渡す
+
+3. **Use Case (Application層)**
+
+   - オペレーションを **Unit of Work** に wrap する
+   - **Payment Processor** を呼び出す
+   - `OrderRepository.CreateOrder` を呼び出す
+     - Order Entity Object を渡す
+
+4. **Order Repository Interface (Domain層)**
+   - **CreateOrder** メソッドを呼び出す
+
+## 外向きフロー
+
+1. **Order Repository Interface (Domain層)**
+   - 作成した Order を返す
+2. **Use Case (Application層)**
+   - `OrderRepository.CreateOrder` が返した Order を返す
+3. **CreateOrderController (Interface Adaptor層)**
+   - `CreateOrderUseCase` が返した値を **OrderPresenter** でディスプレイフォーマットに変換して返す
+4. **createOrderHandler (Driver & Infrastructure層)**
+   - Controller が返した値を返す

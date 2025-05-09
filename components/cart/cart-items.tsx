@@ -2,7 +2,8 @@ import Image from "next/image";
 import { Button } from "../ui/button";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { Separator } from "../ui/separator";
-import { CartItem } from "@/contexts/cart-context";
+import { CartItem } from "@/stores/use-cart";
+
 type props = {
   items: CartItem[];
   updateQuantity: (id: string, quantity: number) => void;

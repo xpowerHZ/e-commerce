@@ -1,18 +1,18 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useCart } from "@/contexts/cart-context";
-import { Product } from "@/types/Product";
+import { ProductDetailView } from "@/server/controller/product/presenter";
+import useCartStore from "@/stores/use-cart";
+
 import { Heart, Minus, Plus, ShoppingCart } from "lucide-react";
 import { useState } from "react";
 
-
 type Props = {
-  product: Product;
+  product: ProductDetailView;
 };
 
 export const QuantitySelector = ({ product }: Props) => {
-  const { addItem } = useCart();
+  const addItem = useCartStore((state) => state.addItem);
   const [quantity, setQuantity] = useState(1);
 
   const decreaseQuantity = () => {

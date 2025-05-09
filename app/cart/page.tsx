@@ -1,12 +1,14 @@
 "use client";
-import { useCart } from "../../contexts/cart-context";
 import { EmptyCart } from "@/components/cart/empty-cart";
 import { ContinueShoppingButton } from "@/components/cart/continue-shopping-button";
 import { OrderSummary } from "@/components/cart/order-summary";
 import { CartItems } from "@/components/cart/cart-items";
+import useCartStore from "@/stores/use-cart";
 
 export default function CartPage() {
-  const { items, updateQuantity, removeItem } = useCart();
+  const items = useCartStore((state) => state.items);
+  const updateQuantity = useCartStore((state) => state.updateQuantity);
+  const removeItem = useCartStore((state) => state.removeItem);
 
   return (
     <div className="container px-4 py-8 md:px-6 md:py-12">

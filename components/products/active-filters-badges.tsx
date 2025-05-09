@@ -1,7 +1,10 @@
 "use client";
 
 import { FilterBadge } from "@/components/ui/filter-badge";
-import { Category, CategoryType, SortOption } from "@/types/Product";
+import { Category, CategoryMap } from "@/mapper/category-map";
+import { SortOptionMap } from "@/mapper/sort-option-map";
+
+
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export const ActiveFilterBadges = () => {
@@ -10,7 +13,7 @@ export const ActiveFilterBadges = () => {
   const searchParams = useSearchParams();
 
   // Extract values from the URL
-  const categories = searchParams.getAll("category") as CategoryType[];
+  const categories = searchParams.getAll("category") as Category[];
   const minParam = searchParams.get("min");
   const maxParam = searchParams.get("max");
   const min = minParam ? Number(minParam) : undefined;
@@ -38,7 +41,7 @@ export const ActiveFilterBadges = () => {
   };
 
   // Remove a specific category from the URL
-  const handleRemoveCategory = (category: CategoryType) => {
+  const handleRemoveCategory = (category: Category) => {
     const updatedParams = new URLSearchParams(searchParams.toString());
     const updatedCategories = updatedParams
       .getAll("category")
@@ -61,7 +64,7 @@ export const ActiveFilterBadges = () => {
       {categories.map((c) => (
         <FilterBadge
           key={c}
-          label={Category[c as keyof typeof Category]?.display}
+          label={CategoryMap[c as keyof typeof CategoryMap]?.display}
           onRemove={() => handleRemoveCategory(c)}
         />
       ))}
@@ -79,7 +82,7 @@ export const ActiveFilterBadges = () => {
       )}
       {sort && (
         <FilterBadge
-          label={SortOption[sort as keyof typeof SortOption]?.display}
+          label={SortOptionMap[sort as keyof typeof SortOptionMap]?.display}
           onRemove={() => handleRemoveBadge("sort")}
         />
       )}

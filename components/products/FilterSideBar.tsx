@@ -15,10 +15,10 @@ import {
   SheetClose,
   SheetFooter,
 } from "@/components/ui/sheet";
-import { CategoryType } from "@/types/Product";
 import { Filter } from "lucide-react";
 import { CategoryCheckboxes } from "./category-checkboxes";
 import { PriceFilter } from "./price-filters";
+import { Category } from "@/mapper/category-map";
 
 type FilterSideBarProps = {};
 
@@ -32,22 +32,22 @@ export const FilterSideBar = ({}: FilterSideBarProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   // Local state for filters
-  const [categories, setCategories] = useState<CategoryType[]>([]);
-  const [priceLimit, setPriceLimit] = useState<{ min: number; max: number }>({
-    min: 0,
-    max: Infinity,
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [priceLimit, setPriceLimit] = useState<{ minPrice: number; maxPrice: number }>({
+    minPrice: 0,
+    maxPrice: Infinity,
   });
 
   // Sync the filter state with the URL search parameters when the sidebar opens
   useEffect(() => {
     if (isOpen) {
       // Get current values from URL
-      const categoryQuery = searchParams.getAll("category") as CategoryType[];
-      const minPriceQuery = Number(searchParams.get("min") ?? 0);
-      const maxPriceQuery = Number(searchParams.get("max") ?? Infinity);
-      
+      const categoryQuery = searchParams.getAll("category") as Category[];
+      const minPriceQuery = Number(searchParams.get("minPrice") ?? 0);
+      const maxPriceQuery = Number(searchParams.get("maxPrice") ?? Infinity);
+
       setCategories(categoryQuery);
-      setPriceLimit({ min: minPriceQuery, max: maxPriceQuery });
+      setPriceLimit({ minPrice: minPriceQuery, maxPrice: maxPriceQuery });
     }
   }, [isOpen, searchParams]);
 
@@ -56,8 +56,8 @@ export const FilterSideBar = ({}: FilterSideBarProps) => {
 
     // Remove only the filter keys that you're updating
     newSearchParams.delete("category");
-    newSearchParams.delete("min");
-    newSearchParams.delete("max");
+    newSearchParams.delete("minPrice");
+    newSearchParams.delete("maxPrice");
 
     // Append the updated filter values
     if (categories.length > 0) {
@@ -66,12 +66,12 @@ export const FilterSideBar = ({}: FilterSideBarProps) => {
       });
     }
 
-    if (priceLimit.min > 0) {
-      newSearchParams.set("min", priceLimit.min.toString());
+    if (priceLimit.minPrice > 0) {
+      newSearchParams.set("minPrice", priceLimit.minPrice.toString());
     }
 
-    if (priceLimit.max < Infinity) {
-      newSearchParams.set("max", priceLimit.max.toString());
+    if (priceLimit.maxPrice < Infinity) {
+      newSearchParams.set("maxPrice", priceLimit.maxPrice.toString());
     }
 
     // Update URL with the new search parameters

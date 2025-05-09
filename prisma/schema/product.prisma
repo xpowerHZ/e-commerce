@@ -1,13 +1,14 @@
 model Product {
-  id         String   @id @default(uuid())
+  id         String      @id @default(uuid())
   name       String
   category   String
-  price      Decimal 
+  price      Int
   image      String
   featured   Boolean
   material   String
   dimensions String
   origin     String
   care       String
-  createdAt  DateTime @default(now())
+  createdAt  DateTime    @default(now())
+  OrderItem  OrderItem[]
 }

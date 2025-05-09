@@ -1,20 +1,37 @@
-import { CartItem } from "@/contexts/cart-context";
 import { Separator } from "../ui/separator";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { ArrowRight } from "lucide-react";
+import useCartStore, { CartItem } from "@/stores/use-cart";
+
+import { createOrderHandler } from "@/server/handler/order/create-order-handler";
+import { useRouter } from "next/navigation";
+import {
+  OrderRequestType,
+  RequestOrderItemType,
+} from "@/shared/order/create-order-request";
 
 type props = {
   items: CartItem[];
 };
 export const OrderSummary = ({ items }: props) => {
   // Calculate totals
+  const router = useRouter();
+  const clearCart = useCartStore((state) => state.clearCart);
   const subtotal: number = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
   const shipping = subtotal > 50 ? 0 : 5.99;
   const total = subtotal + shipping;
+
+  const handleCheckout = async () => {
+    const orderRequest = toOrderRequest(items, total);
+    await createOrderHandler(orderRequest);
+    router.push("/");
+    clearCart();
+  };
+
   return (
     <div>
       <div className="rounded-lg border shadow-sm">
@@ -47,7 +64,7 @@ export const OrderSummary = ({ items }: props) => {
               </div>
             </div>
 
-            <Button className="w-full gap-1">
+            <Button className="w-full gap-1" onClick={handleCheckout}>
               Checkout
               <ArrowRight className="h-4 w-4" />
             </Button>
@@ -56,4 +73,22 @@ export const OrderSummary = ({ items }: props) => {
       </div>
     </div>
   );
+};
+
+const toOrderRequest = (
+  items: CartItem[],
+  totalPrice: number
+): OrderRequestType => {
+  const requestOrderItems: RequestOrderItemType[] = items.map((item) => {
+    return {
+      productId: item.id,
+      price: Math.round(item.price * 100),
+      quantity: item.quantity,
+    } as RequestOrderItemType;
+  });
+
+  return {
+    items: requestOrderItems,
+    totalPrice: Math.round(totalPrice * 100),
+  } as OrderRequestType;
 };

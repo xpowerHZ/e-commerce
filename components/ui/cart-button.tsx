@@ -2,11 +2,11 @@
 
 import { ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useCart } from "../../contexts/cart-context";
 import Link from "next/link";
+import useCartStore from "@/stores/use-cart";
 
 export function CartButton() {
-  const { itemCount } = useCart();
+  const itemCount = useCartStore((state) => state.itemCount);
 
   return (
     <Link href="/cart">

@@ -4,7 +4,7 @@ import {
   getDefaultFilter,
   SortOption,
   Filter,
-} from "@/types/Product";
+} from "@/server/product/domain/entities/types/Product";
 import { useContext, useState, createContext } from "react";
 import { PropsWithChildren } from "react";
 import { createStore, StoreApi, useStore } from "zustand";

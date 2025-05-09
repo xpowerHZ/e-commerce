@@ -1,17 +1,18 @@
 import { ProductCard } from "@/components/ui/product-card";
-import { FilterParams } from "@/types/Product";
-
-import { getProducts } from "@/api/products/products";
+import { CategoryMap } from "@/mapper/category-map";
+import { Filter } from "@/server/domains/product/value-object/filter";
+import { getProductsHandler } from "@/server/handler/product/get-products-handler";
+import { FilterRequestType } from "@/shared/product/get-products-filter";
 
 type ProductsListProps = {
-  filterQueries: FilterParams;
+  filterQueries: FilterRequestType;
 };
 
 export default async function ProductsList({
   filterQueries,
 }: ProductsListProps) {
-  const products = await getProducts(filterQueries);
-  console.log("PRODUCTS", products);
+  const filterRequest = toFilterRequest(filterQueries);
+  const products = await getProductsHandler(filterRequest);
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
@@ -21,11 +22,8 @@ export default async function ProductsList({
             key={product.id}
             id={product.id}
             name={product.name}
-            category={
-              product.category.charAt(0).toUpperCase() +
-              product.category.slice(1)
-            }
-            price={product.price.toNumber()}
+            category={CategoryMap[product.category as keyof typeof CategoryMap].display}
+            price={product.price}
             image={product.image || "/placeholder.svg"}
           />
         ))
@@ -38,3 +36,12 @@ export default async function ProductsList({
     </div>
   );
 }
+
+const toFilterRequest = (filterQueries: FilterRequestType) => {
+  const filterRequest: FilterRequestType = {
+    ...filterQueries,
+    minPrice: filterQueries.minPrice ? filterQueries.minPrice * 100 : undefined,
+    maxPrice: filterQueries.maxPrice ? filterQueries.maxPrice * 100 : undefined,
+  };
+  return filterRequest;
+};

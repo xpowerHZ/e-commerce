@@ -2,11 +2,11 @@ import { Label } from "../ui/label";
 
 type Props = {
   priceLimit: {
-    min: number;
-    max: number;
+    minPrice: number;
+    maxPrice: number;
   };
   setPriceLimit: React.Dispatch<
-    React.SetStateAction<{ min: number; max: number }>
+    React.SetStateAction<{ minPrice: number; maxPrice: number }>
   >;
 };
 
@@ -15,16 +15,16 @@ export const PriceFilter = (props: Props) => {
   return (
     <div className="grid grid-cols-2 gap-4">
       <div className="grid gap-2">
-        <Label htmlFor="price-min">Min ($)</Label>
+        <Label htmlFor="price-minPrice">Min($)</Label>
         <input
-          id="price-min"
+          id="price-minPrice"
           type="number"
           min="0"
-          value={priceLimit.min === 0 ? "" : priceLimit.min}
+          value={priceLimit.minPrice === 0 ? "" : priceLimit.minPrice}
           onChange={(e) =>
             setPriceLimit({
               ...priceLimit,
-              min: e.target.value === "" ? 0 : Number(e.target.value),
+              minPrice: e.target.value === "" ? 0 : Number(e.target.value),
             })
           }
           placeholder="No Min"
@@ -33,15 +33,16 @@ export const PriceFilter = (props: Props) => {
         />
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="price-max">Max ($)</Label>
+        <Label htmlFor="price-maxPrice">Max($)</Label>
         <input
-          id="price-max"
+          id="price-maxPrice"
           type="number"
-          value={priceLimit.max === Infinity ? "" : priceLimit.max}
+          value={priceLimit.maxPrice === Infinity ? "" : priceLimit.maxPrice}
           onChange={(e) =>
             setPriceLimit({
               ...priceLimit,
-              max: e.target.value === "" ? Infinity : Number(e.target.value),
+              maxPrice:
+                e.target.value === "" ? Infinity : Number(e.target.value),
             })
           }
           placeholder="No Max"

@@ -1,14 +1,15 @@
 import { Suspense } from "react";
-import { FilterParams } from "@/types/Product";
+
 import ProductsList from "../../components/products/ProductList";
 import FilterSection from "@/components/products/filter-section";
 import { TitleSection } from "@/components/products/TitleSection";
 import { ActiveFilterBadges } from "@/components/products/active-filters-badges";
 import { SortDropDown } from "@/components/products/SortDropdown";
 import { ProductListSkeleton } from "@/components/products/productlist-skeleton";
+import { FilterRequestType } from "@/shared/product/get-products-filter";
 
 type ProductsPageProps = {
-  searchParams: Promise<FilterParams>;
+  searchParams: Promise<FilterRequestType>;
 };
 
 export default async function ProductsPage({
